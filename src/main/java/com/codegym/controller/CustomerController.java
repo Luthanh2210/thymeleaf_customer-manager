@@ -4,11 +4,8 @@ import com.codegym.model.Customer;
 import com.codegym.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -44,10 +41,11 @@ public class CustomerController {
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable int id, ModelMap modelMap){
-        Customer customer = customerService.findById(id)    ;
-        modelMap.addAttribute("customer", customer);
-        return "edit";
+    public ModelAndView showEditForm (@PathVariable int id) {
+        ModelAndView modelAndView = new ModelAndView("edit");
+        Customer customer = customerService.findById(id);
+        modelAndView.addObject("customer", customer);
+        return modelAndView;
     }
     @PostMapping("/edit/{id}")
     public ModelAndView edit(@PathVariable int id, @ModelAttribute Customer customer){
@@ -59,21 +57,29 @@ public class CustomerController {
     }
 
     @GetMapping("delete/{id}")
-    public String delete(@PathVariable int id, Model model) {
-        model.addAttribute("customer", customerService.findById(id));
-        return "delete";
+    public ModelAndView ShowDeleteForm (@PathVariable int id){
+        ModelAndView modelAndView = new ModelAndView("/delete");
+        Customer customer = customerService.findById(id);
+        modelAndView.addObject("customer", customer);
+        return modelAndView;
     }
     @PostMapping("delete")
-    public String delete(Customer customer, RedirectAttributes redirect) {
-        customerService.remove(customer.getId());
-        redirect.addFlashAttribute("success", "Removed customer successfully!");
-        return "redirect:/customers";
+    public ModelAndView delete (@PathVariable int id){
+        ModelAndView modelAndView = new ModelAndView("/index");
+        customerService.remove(id);
+
+        List<Customer> customerList = customerService.findAll();
+        modelAndView.addObject("list", customerList);
+        return modelAndView;
     }
 
     @GetMapping("view/{id}")
-    public String view(@PathVariable int id, Model model) {
-        model.addAttribute("customer", customerService.findById(id));
-        return "view";
+    public ModelAndView view(@PathVariable int id){
+        ModelAndView modelAndView = new ModelAndView("/view");
+        Customer customer = customerService.findById(id);
+        modelAndView.addObject("customer", customer);
+        return modelAndView;
     }
+
 
 }
