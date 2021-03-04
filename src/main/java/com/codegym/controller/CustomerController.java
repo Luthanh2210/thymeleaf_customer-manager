@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -64,13 +65,10 @@ public class CustomerController {
         return modelAndView;
     }
     @PostMapping("delete")
-    public ModelAndView delete (@PathVariable int id){
-        ModelAndView modelAndView = new ModelAndView("/index");
-        customerService.remove(id);
-
-        List<Customer> customerList = customerService.findAll();
-        modelAndView.addObject("list", customerList);
-        return modelAndView;
+    public String delete(Customer customer, RedirectAttributes redirectAttributes){
+        customerService.remove(customer.getId());
+        redirectAttributes.addFlashAttribute("success","Removed customer successfully!");
+        return "redirect:/";
     }
 
     @GetMapping("view/{id}")
